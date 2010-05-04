@@ -1,0 +1,68 @@
+8
+
+dir
+1
+svn://soyuz@192.168.1.96:3690/repos/svn/Geologger/build/Geologger.build/Release/DeviceConnectionLib.build
+svn://soyuz@192.168.1.96:3690
+
+
+
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+7d86706e-037a-4602-a6cd-156e3318e43d
+
+Objects-normal
+dir
+
+DeviceConnection.hmap
+file
+
+
+
+
+2007-11-19T03:39:43.000000Z
+bddbf47206a7dfdfce3a81b78a001613
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+has-props
+
+DeviceConnectionLib~.dep
+file
+
+
+
+
+2007-11-19T03:39:43.000000Z
+5966e06e32adf1a91b38ba2bbc12afff
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+
+DeviceConnectionLib.dep
+file
+
+
+
+
+2007-11-19T03:39:43.000000Z
+de12025810cf2bb9b2086d4a9d91dcd2
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+

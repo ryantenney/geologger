@@ -1,0 +1,135 @@
+8
+
+dir
+1
+svn://soyuz@192.168.1.96:3690/repos/svn/Geologger/build/Geologger.build/Release/JavaHeaders.build
+svn://soyuz@192.168.1.96:3690
+
+
+
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+7d86706e-037a-4602-a6cd-156e3318e43d
+
+JavaClasses
+dir
+
+Objects-normal
+dir
+
+JavaHeaders.hmap
+file
+
+
+
+
+2007-11-19T03:39:43.000000Z
+bddbf47206a7dfdfce3a81b78a001613
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+has-props
+
+JavaHeaders~.dep
+file
+
+
+
+
+2007-11-19T03:39:43.000000Z
+d41d8cd98f00b204e9800998ecf8427e
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+
+JavaHeaders.jam
+file
+
+
+
+
+2007-11-19T03:39:43.000000Z
+5e860975e3ac0b8557e748e3e27ea9a9
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+
+JavaHeaders.dep
+file
+
+
+
+
+2007-11-19T04:14:02.000000Z
+d41d8cd98f00b204e9800998ecf8427e
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+
+HeaderDependencies.jam
+file
+
+
+
+
+2007-11-19T03:39:43.000000Z
+01613ae16481539a63e790e05cbdb960
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+
+DerivedSources
+dir
+
+BPTag003-script.sh
+file
+
+
+
+
+2007-11-19T03:39:43.000000Z
+ac35ec395a385093589e277fe87aa279
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+has-props
+
+JavaFileList
+file
+
+
+
+
+2007-11-19T03:39:43.000000Z
+7263bf270fd10a853dfdc949e686c081
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+
+pbdevelopment.plist
+file
+
+
+
+
+2007-11-19T03:39:43.000000Z
+2c6db6f08162d3770100fde4f3c56e91
+2007-11-19T02:59:40.790801Z
+1
+soyuz
+
