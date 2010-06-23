@@ -1,124 +1,0 @@
-8
-
-dir
-1
-svn://soyuz@192.168.1.96:3690/repos/svn/Geologger/build/Release/Geologger.app/Contents/Resources
-svn://soyuz@192.168.1.96:3690
-
-
-
-2007-11-19T02:59:40.790801Z
-1
-soyuz
-
-
-svn:special svn:externals svn:needs-lock
-
-
-
-
-
-
-
-
-
-
-
-7d86706e-037a-4602-a6cd-156e3318e43d
-
-zh_TW.lproj
-dir
-
-Java
-dir
-
-fi.lproj
-dir
-
-zh_CN.lproj
-dir
-
-French.lproj
-dir
-
-Spanish.lproj
-dir
-
-Dutch.lproj
-dir
-
-German.lproj
-dir
-
-ko.lproj
-dir
-
-cp210x_driver.dmg
-file
-
-
-
-
-2007-11-19T03:39:41.000000Z
-62036d84dd4c45981674fc07b7b809e7
-2007-11-19T02:59:40.790801Z
-1
-soyuz
-has-props
-
-pl.lproj
-dir
-
-no.lproj
-dir
-
-Geologger.icns
-file
-
-
-
-
-2007-11-19T03:39:41.000000Z
-950d4710655b0b488e59d7e1e2ba5487
-2007-11-19T02:59:40.790801Z
-1
-soyuz
-has-props
-
-Italian.lproj
-dir
-
-pt.lproj
-dir
-
-da.lproj
-dir
-
-Japanese.lproj
-dir
-
-pt_PT.lproj
-dir
-
-ru.lproj
-dir
-
-libDeviceConnection.jnilib
-file
-
-
-
-
-2007-11-19T03:39:41.000000Z
-df22d40b3ff3db8c09355492fdfe8bbf
-2007-11-19T02:59:40.790801Z
-1
-soyuz
-has-props
-
-sv.lproj
-dir
-
-English.lproj
-dir
-
