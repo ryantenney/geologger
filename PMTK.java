@@ -1,67 +1,45 @@
-/*	PMTK.java
-
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License version 2.x,
-	as published by	the Free Software Foundation;
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 import java.util.*;
 
-public class PMTK extends NMEAVerb
-{
-	public class DataPacket
-	{
+public class PMTK extends NMEAVerb {
+
+	public static class DataPacket {
+
 		int address;
 		byte[] bytedata;
-	
-		public DataPacket( int offset, byte[] data )
-		{
+
+		public DataPacket( int offset, byte[] data ) {
 			address = offset;
 			bytedata = data;
 		}
-		
-		public int getOffset()
-		{
+
+		public int getOffset() {
 			return address;
 		}
-		
-		public void setOffset( int value )
-		{
+
+		public void setOffset( int value ) {
 			address = value;
 		}
-		
-		public int getLength()
-		{
+
+		public int getLength() {
 			return bytedata.length;
 		}
-			
-		public byte[] getData()
-		{
+
+		public byte[] getData() {
 			return bytedata;
 		}
-			
-		public void setData( byte[] value )
-		{
+
+		public void setData( byte[] value ) {
 			bytedata = value;
 		}
 	}
-	
+
 	private byte[] logData;
 	private boolean[] blockStatus;
 	private int bytesComplete;
-	
-	public PMTK()
-	{
+
+	public PMTK() {
 		super( "PMTK" );
-		
+
 		logData = new byte[ 0x00200000 ];
 		blockStatus = new boolean[ 0x00200000 ];
 		bytesComplete = 0;
@@ -69,9 +47,8 @@ public class PMTK extends NMEAVerb
 		Arrays.fill( logData, 0x00000000, 0x00200000, (byte)0x00 );
 		Arrays.fill( blockStatus, 0x00000000, 0x00200000, false );
 	}
-	
-	protected void abstractParser( NMEASentence sentence )
-	{
+
+	protected void abstractParser( NMEASentence sentence ) {
 		String pmtkType = sentence.getPMTKType();
 		String args[] = sentence.getArgs();
 		if( pmtkType.equals( "182" ) && args[ 0 ].equals( "8" ) )
@@ -85,8 +62,7 @@ public class PMTK extends NMEAVerb
 		}
 	}
 
-	private byte[] readHexToByteArray( String hexData )
-	{
+	private byte[] readHexToByteArray( String hexData ) {
 		byte[] output = new byte[ hexData.length() / 2 ];
 		for( int i = 0; i < hexData.length(); i += 2 )
 		{
@@ -95,36 +71,29 @@ public class PMTK extends NMEAVerb
 		return output;
 	}
 
-	private void readHexToByteArray( String srcHex, byte[] destBin, int destOffset )
-	{
-		for( int i = 0; i < srcHex.length(); i += 2 )
-		{
+	private void readHexToByteArray( String srcHex, byte[] destBin, int destOffset ) {
+		for( int i = 0; i < srcHex.length(); i += 2 ) {
 			destBin[ destOffset++ ] = (byte)( Integer.parseInt( srcHex.substring( i, i + 2 ), 16 ) & 0xFF );
 		}
 	}
-	
-	public boolean isComplete()
-	{
+
+	public boolean isComplete() {
 		boolean retval = blockStatus[ 0 ];
-		for( int i = 1; i < blockStatus.length; ++i )
-		{
+		for( int i = 1; i < blockStatus.length; ++i ) {
 			retval &= blockStatus[ i ];
 			if( retval == false ) { break; }
 		}
 		return retval;
 	}
-	
-	public float percentComplete()
-	{
+
+	public float percentComplete() {
 		float blocksComplete = 0.0f;
-		for( int i = 0; i < blockStatus.length; ++i )
-		{
-			if( blockStatus[ i ] )
-			{
+		for( int i = 0; i < blockStatus.length; ++i ) {
+			if( blockStatus[ i ] ) {
 				++blocksComplete;
 			}
 		}
 		return blocksComplete / (float)blockStatus.length;
 	}
-	
+
 }

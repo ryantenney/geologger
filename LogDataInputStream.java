@@ -1,26 +1,11 @@
-///*	LogDataInputStream.java
-//
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License version 2.x,
-//	as published by	the Free Software Foundation;
-//
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
-//
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//*/
-//
 //import java.lang.reflect.*;
 //
 //public class LogDataInputStream
 //{
-//	
+//
 //	int pos, len, mark;
 //	byte[] data;
-//	
+//
 //	public LogDataInputStream( byte[] data )
 //	{
 //		this.data = data;
@@ -28,12 +13,12 @@
 //		this.mark = 0;
 //		this.len = data.length;
 //	}
-//	
+//
 //	public Type read( LogDataType type )
 //	{
 //		//byte[] b
 //		int b = read( bytetype.getByteLength() );
-//		
+//
 //		switch( type )
 //		{
 //			case BYTE:
@@ -45,9 +30,9 @@
 //			case FLOAT:
 //				return new Float( Float.intBitsToFloat( b ) );
 //			case DOUBLE:
-//				return new Double( Double.longBitsToDouble( b ) );				
+//				return new Double( Double.longBitsToDouble( b ) );
 //		}
-//		
+//
 //		return null;
 //	}
 //
@@ -59,7 +44,7 @@
 //			out = ( out << 8 ) | ( this.data[ pos++ ] & 0xFF );
 //		}
 //	}
-//	
+//
 ////	public byte[] read( int readlen )
 ////	{
 ////		byte[] out = new byte[ readlen ];
@@ -68,15 +53,15 @@
 ////			out[ i ] = this.data[ pos++ ];
 ////		}
 ////	}
-//	
+//
 //	public void mark()
 //	{
 //		this.mark = this.pos;
 //	}
-//	
+//
 //	public void reset()
 //	{
 //		this.pos = this.mark;
 //	}
-//	
+//
 //}

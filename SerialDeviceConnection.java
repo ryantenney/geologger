@@ -1,24 +1,8 @@
-/*	SerialDeviceConnection.java
-
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License version 2.x,
-	as published by	the Free Software Foundation;
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 import java.util.*;
 import java.util.concurrent.*;
 
-public class SerialDeviceConnection implements DeviceConnection
-{	
-	
+public class SerialDeviceConnection implements DeviceConnection {
+
 	// native events to be accessed via JNI
 	protected final native void open( String port );
 	protected final native void puts( String data );
@@ -31,158 +15,126 @@ public class SerialDeviceConnection implements DeviceConnection
 	protected final native int getState();
 
 	protected DeviceState state;
-	
+
 	protected Thread async;
 	protected final Set< DeviceListener > callbacks;
-	
-	public SerialDeviceConnection()
-	{
+
+	public SerialDeviceConnection() {
 		callbacks = Collections.synchronizedSet( new HashSet< DeviceListener >() );
 		state = DeviceState.CLOSED;
 	}
-	
-	public void connect( String port )
-	{
-		if( state.compareTo( DeviceState.CLOSED ) <= 0 )
-		{
+
+	public void connect( String port ) {
+		if( state.compareTo( DeviceState.CLOSED ) <= 0 ) {
 			open( port );
 		}
 	}
 
-	public void connect( String port, int baudrate )
-	{
-		if( state.compareTo( DeviceState.CLOSED ) <= 0 )
-		{
+	public void connect( String port, int baudrate ) {
+		if( state.compareTo( DeviceState.CLOSED ) <= 0 ) {
 			open( port );
 			setBaud( baudrate );
 		}
 	}
-	
-	public void disconnect()
-	{
+
+	public void disconnect() {
 		System.out.println( state.compareTo( DeviceState.OPEN ) );
-		if( state.compareTo( DeviceState.OPEN ) >= 0 )
-		{
+		if( state.compareTo( DeviceState.OPEN ) >= 0 ) {
 			close();
 			async = null;
 		}
 	}
 
-	public void beginReceiveAsync()
-	{
-		if( async == null && state == DeviceState.OPEN )
-		{
+	public void beginReceiveAsync() {
+		if( async == null && state == DeviceState.OPEN ) {
 			async = new Thread( new Runnable() {
 				public void run() {
 					startGetsAsync();
-				}			
+				}
 			}, "SerialDeviceConnection::ReceiveAsync" );
 			async.start();
 		}
 	}
-	
-	public void endReceiveAsync()
-	{
-		if( async != null && state == DeviceState.ASYNC )
-		{
+
+	public void endReceiveAsync() {
+		if( async != null && state == DeviceState.ASYNC ) {
 			endGetsAsync();
 			// wait for the thread to finish, mebbe?
 			async = null;
 		}
 	}
-	
-	public void addDeviceListener( DeviceListener listener )
-	{
-		if( listener != null )
-		{
+
+	public void addDeviceListener( DeviceListener listener ) {
+		if( listener != null ) {
 			callbacks.add( listener );
 		}
 	}
-	
-	public void removeDeviceListener( DeviceListener listener )
-	{
+
+	public void removeDeviceListener( DeviceListener listener ) {
 		callbacks.remove( listener );
 	}
-	
-	protected void raiseDataEvent( int len, String data )
-	{
+
+	protected void raiseDataEvent( int len, String data ) {
 		// raised through JNI by startGetsAsync in DeviceConnection.jnilib
 		deviceDataEvent( DeviceListener.Direction.RECEIVE, len, data );
 	}
-	
-	protected void deviceDataEvent( final DeviceListener.Direction dir, final int len, final String data )
-	{
+
+	protected void deviceDataEvent( final DeviceListener.Direction dir, final int len, final String data ) {
 		final DeviceConnection finalThis = this;
-					   
+
 		// anonymous class
 		new Thread( new Runnable() {
-			public synchronized void run()
-			{
-				for( DeviceListener listener : callbacks )
-				{
-					if( listener != null )
-					{
+			public synchronized void run() {
+				for( DeviceListener listener : callbacks ) {
+					if( listener != null ) {
 						listener.deviceDataEvent( finalThis, dir, len, data );
-					}
-					else
-					{
+					} else {
 						callbacks.remove( listener );
 					}
 				}
 			}
 		}, "SerialDeviceConnection::deviceDataEvent" ).start();
-	
+
 	}
-	
-	protected void deviceStateEvent( final int state )
-	{
+
+	protected void deviceStateEvent( final int state ) {
 		this.state = DeviceState.getState( state );
-		
+
 		final DeviceConnection finalThis = this;
 		final DeviceState finalState = this.state;
-		
+
 		// anonymous class
 		new Thread( new Runnable() {
-			public synchronized void run()
-			{
-				for( DeviceListener listener : callbacks )
-				{
-					if( listener != null )
-					{	
+			public synchronized void run() {
+				for( DeviceListener listener : callbacks ) {
+					if( listener != null ) {
 						listener.deviceStateEvent( finalThis, finalState );
-					}
-					else
-					{
+					} else {
 						callbacks.remove( listener );
 					}
 				}
 			}
 		}, "SerialDeviceConnection::deviceStateEvent" ).start();
 	}
-		
-	public void send( String data )
-	{
+
+	public void send( String data ) {
 		puts( data );
 		deviceDataEvent( DeviceListener.Direction.TRANSMIT, data.length(), data );
 	}
-	
-	public DeviceState getDeviceState()
-	{
+
+	public DeviceState getDeviceState() {
 		return state;
 	}
-	
-	public int getBaudRate()
-	{
+
+	public int getBaudRate() {
 		return getBaud();
 	}
-	
-	public void setBaudRate( int value )
-	{
+
+	public void setBaudRate( int value ) {
 		setBaud( value );
 	}
-	
-	static
-	{
+
+	static {
 		System.loadLibrary( "SerialDeviceConnection" );
 	}
 

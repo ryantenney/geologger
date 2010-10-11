@@ -1,18 +1,3 @@
-/*	SerialDeviceConnection.c
-
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License version 2.x,
-	as published by	the Free Software Foundation;
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include <stdlib.h>
 #include <termios.h>
 #include <string.h>
@@ -44,13 +29,13 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_open( JNIEnv *jenv, jobject o
 
 	// get a reference to the calling java class
 	jclass myClass = (*jenv)->GetObjectClass( jenv, obj );
-	
+
 	// get the method ids to allow calling methods within the calling java class
 	jmethodID deviceStateEventID = (*jenv)->GetMethodID( jenv, myClass, "deviceStateEvent", "(I)V" );
 
 	// open a connection to the port specified
 	serial = fopen( port, "r+" );
-	
+
 	// test if port opened
 	if( serial == NULL )
 	{
@@ -65,10 +50,10 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_open( JNIEnv *jenv, jobject o
 
 	// raise state event
 	(*jenv)->CallVoidMethod( jenv, obj, deviceStateEventID, state );
-	
+
 	// garbage collect port string
 	(*jenv)->ReleaseStringUTFChars( jenv, jport, port );
-	
+
 	return;
 }
 
@@ -87,11 +72,11 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_puts( JNIEnv *jenv, jobject o
 
 		// put string to serial port
 		fputs( data, serial );
-		
+
 		// release passed string
 		(*jenv)->ReleaseStringUTFChars( jenv, jdata, data );
 	}
-	
+
 	return;
 }
 
@@ -107,19 +92,19 @@ JNIEXPORT jstring JNICALL Java_SerialDeviceConnection_gets( JNIEnv *jenv, jobjec
 	{
 		// allocate storage for incoming data
 		char *data = malloc( 8192 );
-		
+
 		// get incoming data on this port
 		fgets( data, 8192, serial );
-		
+
 		// convert to jni string type
 		jstring java_str = (*jenv)->NewStringUTF( jenv, data );
-		
+
 		// free memory
 		free( data );
-		
+
 		return java_str;
 	}
-	
+
 	return;
 }
 
@@ -135,21 +120,21 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_startGetsAsync( JNIEnv *jenv,
 	{
 		// get a reference to the calling java class
 		jclass myClass = (*jenv)->GetObjectClass( jenv, obj );
-		
+
 		// get the method ids to allow calling methods within the calling java class
 		jmethodID deviceStateEventID = (*jenv)->GetMethodID( jenv, myClass, "deviceStateEvent", "(I)V" );
 		jmethodID deviceDataEventID = (*jenv)->GetMethodID( jenv, myClass, "raiseDataEvent", "(ILjava/lang/String;)V" );
-		
+
 		// indicate getsAsync is running
 		state = ASYNC;
-		
+
 		// raise state event
 		(*jenv)->CallVoidMethod( jenv, obj, deviceStateEventID, state );
-		
+
 		// allocate data array
 		//char data[ 8192 ];
 		char *data = malloc( 8192 );
-		
+
 		// while data is available and there is no request to close port
 		while( !feof( serial ) && state == ASYNC )
 		{
@@ -157,20 +142,20 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_startGetsAsync( JNIEnv *jenv,
 			{
 				// create a jstring to allow passing through JNI
 				jstring java_str = (*jenv)->NewStringUTF( jenv, data );
-				
+
 				// raise data event with received data
 				(*jenv)->CallVoidMethod( jenv, obj, deviceDataEventID, strlen( data ), java_str );
 			}
 		}
-	
+
 		// frees the 8k block of memory
 		free( data );
-	
+
 		if( feof( serial ) )
 		{
 			// close due to eof
 			fclose( serial );
-			
+
 			// port reached EOF
 			state = ATEOF;
 		}
@@ -178,7 +163,7 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_startGetsAsync( JNIEnv *jenv,
 		{
 			// close has been called
 			fclose( serial );
-			
+
 			// port should now be closed, update status
 			state = CLOSED;
 		}
@@ -191,11 +176,11 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_startGetsAsync( JNIEnv *jenv,
 			// encountered an error
 			state = ERROR;
 		}
-	
+
 		// raise state event
 		(*jenv)->CallVoidMethod( jenv, obj, deviceStateEventID, state );
 	}
-	
+
 	return;
 }
 
@@ -210,18 +195,18 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_endGetsAsync( JNIEnv *jenv, j
 	{
 		// change state to end async
 		state = OPEN;
-		
+
 		// don't raise deviceStateEvent from here... let it run from the async method
 //		// get a reference to the calling java class
 //		jclass myClass = (*jenv)->GetObjectClass( jenv, obj );
-//		
+//
 //		// get the method ids to allow calling methods within the calling java class
 //		jmethodID deviceStateEventID = (*jenv)->GetMethodID( jenv, myClass, "deviceStateEvent", "(I)V" );
-//		
+//
 //		// raise state event
 //		(*jenv)->CallVoidMethod( jenv, obj, deviceStateEventID, state );
 	}
-	
+
 	return;
 }
 
@@ -236,16 +221,16 @@ JNIEXPORT jint JNICALL Java_SerialDeviceConnection_getBaud( JNIEnv *jenv, jobjec
 	{
 		int baudrate = 0;
 		struct termios options;
-		
+
 		// get the file descriptor
 		int fd = fileno( serial );
-		
+
 		// get current termio settings
 		tcgetattr( fd, &options );
-		
+
 		// get the current baud rate
 		baudrate = cfgetispeed( &options );
-		
+
 		// select the constant value returned and return the baud rate as an int
 		switch( baudrate )
 		{
@@ -269,7 +254,7 @@ JNIEXPORT jint JNICALL Java_SerialDeviceConnection_getBaud( JNIEnv *jenv, jobjec
 			case B230400 : return 230400;
 		}
 	}
-	
+
 	return;
 }
 
@@ -284,7 +269,7 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_setBaud( JNIEnv *jenv, jobjec
 	{
 		int setbaud = 0;
 		struct termios options;
-		
+
 		// take int baud rate input and select the associated constant
 		switch( baudrate )
 		{
@@ -308,21 +293,21 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_setBaud( JNIEnv *jenv, jobjec
 			case 115200 : setbaud = B115200; break;
 			case 230400 : setbaud = B230400; break;
 		}
-	
+
 		// get the file descriptor
 		int fd = fileno( serial );
 
 		// get current termio settings
 		tcgetattr( fd, &options );
-	
+
 		// set baud rate (both input and output)
 		cfsetispeed( &options, setbaud );
 		cfsetospeed( &options, setbaud );
-	
+
 		// set modified termio settings
 		tcsetattr( fd, TCSANOW, &options );
 	}
-	
+
 	return;
 }
 
@@ -338,15 +323,15 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_close( JNIEnv *jenv, jobject 
 	{
 		// get a reference to the calling java class
 		jclass myClass = (*jenv)->GetObjectClass( jenv, obj );
-		
+
 		// get the method ids to allow calling methods within the calling java class
 		jmethodID deviceStateEventID = (*jenv)->GetMethodID( jenv, myClass, "deviceStateEvent", "(I)V" );
-		
+
 		if( state == ASYNC )
 		{
 			// the async method takes care of the rest
 			state = CLOSING;
-			
+
 			// raise state event
 			(*jenv)->CallVoidMethod( jenv, obj, deviceStateEventID, state );
 		}
@@ -354,21 +339,21 @@ JNIEXPORT void JNICALL Java_SerialDeviceConnection_close( JNIEnv *jenv, jobject 
 		{
 			// port is closing
 			state = CLOSING;
-			
+
 			// raise state event
 			(*jenv)->CallVoidMethod( jenv, obj, deviceStateEventID, state );
-			
+
 			// close the port
 			fclose( serial );
-			
+
 			// port has closed
 			state = CLOSED;
-			
+
 			// raise state event
 			(*jenv)->CallVoidMethod( jenv, obj, deviceStateEventID, state );
 		}
 	}
-	
+
 	return;
 }
 

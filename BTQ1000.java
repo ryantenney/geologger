@@ -1,18 +1,3 @@
-/*	BTQ1000.java
-
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License version 2.x,
-	as published by	the Free Software Foundation;
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 /*	PMTK Packets
  
 	Info Set 1:
@@ -38,31 +23,26 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class BTQ1000 extends NMEA
-{
-	public enum ConnectionMode
-	{
+public class BTQ1000 extends NMEA {
+
+	public static enum ConnectionMode {
 		USB, BLUETOOTH;
 	}
-	
-	public enum LogFormat
-	{
+
+	public static enum LogFormat {
 		XML, KML, CSV, BIN, NMEA;
 	}
 
-	public enum RecordMethod
-	{
+	public static enum RecordMethod {
 		OVERWRITE	( 1 ),
 		STOP		( 2 );
-		
+
 		private final int value;
 		RecordMethod( int value ) { this.value = value; }
 		public int value() { return this.value; }
 	}
-	
-	public enum LogSettings
-	{
-	//	UNDEFINED		(  1 ),		// UNDEFINED
+
+	public static enum LogSettings {
 		LOG_FORMAT		(  2 ),		// Log format
 		TIME_INTERVAL	(  3 ),		// Time interval to log (in 0.1 s)
 		DIST_INTERVAL	(  4 ),		// Distance interval to log (in 0.1m)
@@ -72,17 +52,15 @@ public class BTQ1000 extends NMEA
 		MEMORY_USED		(  8 ),		// Memory Used (BUG?:Returned value does seem to be always correct)
 		FLASH			(  9 ),		// Flash, needs cmd
 		NUM_POINTS		( 10 );		// Number of logging points
-	//	UNDEFINED		( 11 );		// UNDEFINED
-	
+
 		private final int value;
 		LogSettings( int value ) { this.value = value; }
 		public int value() { return this.value; }
 	}
-	
-	public enum LogCommands
-	{
-		SET				( 1 ),		//
-		QUERY			( 2 ),		
+
+	public static enum LogCommands {
+		SET				( 1 ),
+		QUERY			( 2 ),
 		DEVICE_RESPONSE	( 3 ),
 		ON				( 4 ),
 		OFF				( 5 ),
@@ -90,14 +68,13 @@ public class BTQ1000 extends NMEA
 		REQUEST			( 7 ),
 		RESPONSE		( 8 ),
 		INIT			( 9 );
-		
+
 		private final int value;
 		LogCommands( int value ) { this.value = value; }
 		public int value() { return this.value; }
 	}
-	
-	public enum Verb
-	{
+
+	public static enum Verb {
 		GPGLL		(  0 ),	// Geographic Position - Latitude longitude
 		GPRMC		(  1 ),	// Recommended Min. specic GNSS sentence
 		GPVTG		(  2 ),	// Course Over Ground and Ground Speed
@@ -112,15 +89,13 @@ public class BTQ1000 extends NMEA
 		PMTKDBG		( 16 ),	// MTK debug information
 		GPZDA		( 17 ),	// Time & Date
 		PMTKCHN		( 18 );	// GPS channel status
-		
+
 		private int val;
-		
+
 		Verb( int value ) { this.val = value; }
-//		public 		
 	}
 
-	public enum PMTKNoun
-	{
+	public static enum PMTKNoun {
 		PMTK_TEST					( "000" ),
 		PMTK_ACK					( "001" ),
 		PMTK_SYS_MSG				( "010" ),
@@ -163,16 +138,16 @@ public class BTQ1000 extends NMEA
 		PMTK_RTCM_BAUD_RATE			( "702" ),
 		PMTK_DT_VERSION				( "704" ),
 		PMTK_DT_RELEASE				( "705" );
-		
+
 		private String noun;
-		
+
 		PMTKNoun( String value ) { this.noun = value; }
 	}
-	
+
 	// Constants
 	private final static String bluetoothPort = "/dev/cu.iBT-GPS";
 	private final static String usbPort = "/dev/cu.SLAB_USBtoUART";
-	
+
 	// Variables
 	private byte[] logData;
 	private boolean[] blockStatus;
@@ -180,22 +155,19 @@ public class BTQ1000 extends NMEA
 	private LinkedList< NMEASentence > dataRequests;
 	private File logFile;
 	private LogFormat logFormat;
-	
-	public BTQ1000()
-	{
+
+	public BTQ1000() {
 		super();
 		initArrays();
 	}
-	
-	public BTQ1000( ConnectionMode deviceConnection )
-	{
+
+	public BTQ1000( ConnectionMode deviceConnection ) {
 		super();
 		initArrays();
 		connect( deviceConnection );
 	}
-	
-	protected void initArrays()
-	{
+
+	protected void initArrays() {
 		logData = new byte[ 0x00200000 ];
 		blockStatus = new boolean[ 0x00200000 ];
 		bytesComplete = 0;
@@ -205,11 +177,9 @@ public class BTQ1000 extends NMEA
 		Arrays.fill( logData, 0x00000000, 0x00200000, (byte)0x00 );
 		Arrays.fill( blockStatus, 0x00000000, 0x00200000, false );
 	}
-	
-	public void connect( ConnectionMode deviceConnection )
-	{
-		switch( deviceConnection )
-		{
+
+	public void connect( ConnectionMode deviceConnection ) {
+		switch( deviceConnection ) {
 			case USB:
 				super.connect( usbPort, 115200 );
 				break;
@@ -218,94 +188,78 @@ public class BTQ1000 extends NMEA
 				break;
 		}
 	}
-	
-	protected void populateVerbs()
-	{
+
+	protected void populateVerbs() {
 		super.populateVerbs();
 		verbs.put( new PMTK() );
 	}
-	
-	public void beginDownloadLogData( File file, LogFormat format )
-	{
+
+	public void beginDownloadLogData( File file, LogFormat format ) {
 		final int interval = 0x00010000;
-		
+
 		initArrays();
-		
+
 		logFile = file;
 		logFormat = format;
 
 		dataRequests.add( new NMEASentence( "PMTK182", new String[] { "7", formatHex( 0x00000000 ), formatHex( 0x00200000 ) } ) );
-		
-//		for( int offset = 0x00000000; offset < 0x00200000; offset += interval )
-//		{ 
-//			dataRequests.add( new NMEASentence( "PMTK182", new String[] { "7", formatHex( offset ), formatHex( interval ) } ) );
-//		}
+
+		//for( int offset = 0x00000000; offset < 0x00200000; offset += interval ) {
+		//	dataRequests.add( new NMEASentence( "PMTK182", new String[] { "7", formatHex( offset ), formatHex( interval ) } ) );
+		//}
 
 		sendSentence( dataRequests.poll() );
 	}
-	
-	public void eraseDevice()
-	{
+
+	public void eraseDevice() {
 		sendSentence( new NMEASentence( "PMTK182", new String[] { "6", "1" } ) );
 	}
-	
-	public int getDownloadProgress()
-	{
+
+	public int getDownloadProgress() {
 		return bytesComplete;
 	}
-	
-	protected String formatHex( int hex )
-	{
+
+	protected String formatHex( int hex ) {
 		return String.format( "%1$08X", hex );
 	}
-	
-	public void verbEvent( String verb, Object[] args )
-	{
-//		System.out.println( String.format( "Verb: %s, Argc: %d, Argv[ 0 ] type: %s", verb, args.length,
-//										   ( args.length >= 1 && args[ 0 ] != null) ? args[ 0 ].getClass().getName() : "NULL" ) );
-		if( verb.equals( "PMTK" ) && args.length >= 1 && args[ 0 ] instanceof PMTK.DataPacket )
-		{
+
+	public void verbEvent( String verb, Object[] args ) {
+		//System.out.println( String.format( "Verb: %s, Argc: %d, Argv[ 0 ] type: %s", verb, args.length,
+		//								   ( args.length >= 1 && args[ 0 ] != null) ? args[ 0 ].getClass().getName() : "NULL" ) );
+
+		if( verb.equals( "PMTK" ) && args.length >= 1 && args[ 0 ] instanceof PMTK.DataPacket ) {
 			PMTK.DataPacket data = ( PMTK.DataPacket ) args[ 0 ];
 			System.arraycopy( data.getData(), 0, logData, data.getOffset(), data.getLength() );
 			Arrays.fill( blockStatus, data.getOffset(), data.getOffset() + data.getLength(), true );
 			bytesComplete += data.getLength();
-			
-//			if( bytesComplete % 0x00010000 == 0 && dataRequests.peek() != null )
-//			{
-//				sendSentence( dataRequests.poll() );
-//			}
 
-			if( bytesComplete == 0x00200000 )
-			{
-				try
-				{
-//					convertLog( logData, LogFormat.BIN, LogFormat.KML );
+			//if( bytesComplete % 0x00010000 == 0 && dataRequests.peek() != null ) {
+			//	sendSentence( dataRequests.poll() );
+			//}
+
+			if( bytesComplete == 0x00200000 ) {
+				try {
+					//convertLog( logData, LogFormat.BIN, LogFormat.KML );
 					FileOutputStream fos = new FileOutputStream( logFile );
 					fos.write( logData );
 					fos.flush();
 					fos.close();
-				}
-				catch( IOException ioex )
-				{
+				} catch( IOException ioex ) {
 					ioex.printStackTrace();
 				}
 			}
-		}
-		else
-		{
+		} else {
 			super.verbEvent( verb, args );
 		}
 	}
-	
-	public boolean isComplete()
-	{
+
+	public boolean isComplete() {
 		boolean retval = blockStatus[ 0 ];
-		for( int i = 1; i < blockStatus.length; ++i )
-		{
+		for( int i = 1; i < blockStatus.length; ++i ) {
 			retval &= blockStatus[ i ];
 			if( retval == false ) { break; }
 		}
 		return retval;
 	}
-	
+
 }
