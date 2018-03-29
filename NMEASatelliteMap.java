@@ -119,7 +119,7 @@ public class NMEASatelliteMap extends JPanel implements NMEAVerbListener {
 
 				// prevent labels from printing if the sats scale
 				// if( labelsVisible & !( labelsVisible & scaledSats ) )	// unnecessarily complex logic
-				if( labelsVisible & !scaledSats )							// really simple logic {
+				if( labelsVisible & !scaledSats ) {							// really simple logic
 					drawStringCenteredAt( thisSat.getPRN(), centerSatellite( thisSat ), g );
 				}
 			} catch( Exception ex ) {

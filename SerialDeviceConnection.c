@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <termios.h>
 #include <string.h>
+#include <jni.h>
 #include "SerialDeviceConnection.h"
 
 #define ASYNC	 2
@@ -105,7 +106,7 @@ JNIEXPORT jstring JNICALL Java_SerialDeviceConnection_gets( JNIEnv *jenv, jobjec
 		return java_str;
 	}
 
-	return;
+	return NULL;
 }
 
 /*
@@ -255,7 +256,7 @@ JNIEXPORT jint JNICALL Java_SerialDeviceConnection_getBaud( JNIEnv *jenv, jobjec
 		}
 	}
 
-	return;
+	return 0;
 }
 
 /*

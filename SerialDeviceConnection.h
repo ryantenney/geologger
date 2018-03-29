@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <termios.h>
 #include <string.h>
+#include <jni.h>
 
 #define ASYNC	 2
 #define OPEN	 1

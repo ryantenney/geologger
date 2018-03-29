@@ -493,13 +493,14 @@ public class LogAnalysis extends JFrame implements ActionListener {
 				dataOut.add( f );
 
 				// 64-bit
+				DataObject l = new DataObject( new Long( ByteOps.readLong( byteData, x ) ), x );
+				l.Source = new byte[ 8 ]; System.arraycopy( byteData, x, l.Source, 0, 8 );
+				dataOut.add( l );
+
 				DataObject d = new DataObject( new Double( Double.longBitsToDouble( (Long)l.Value ) ), x );
 				d.Source = new byte[ 8 ]; System.arraycopy( byteData, x, d.Source, 0, 8 );
 				dataOut.add( d );
 
-				DataObject l = new DataObject( new Long( ByteOps.readLong( byteData, x ) ), x );
-				l.Source = new byte[ 8 ]; System.arraycopy( byteData, x, l.Source, 0, 8 );
-				dataOut.add( l );
 			} catch( ArrayIndexOutOfBoundsException aiex ) {
 				// this is a perfectly normal, and beautiful part of life
 			}

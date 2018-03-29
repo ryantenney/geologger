@@ -1,3 +1,6 @@
 Geologger (Backup).zip
 guild\
 Geologger.xcodeproj
+*.class
+*.o
+*.so

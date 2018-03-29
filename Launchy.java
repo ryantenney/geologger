@@ -2,16 +2,16 @@ public class Launchy {
 
 	public static void main( String args[] ) {
 
-		KmlTest();
+		//KmlTest();
 
 		// Static object to hold instances of Geologger
 		// DEBUGGING ONLY
-//		Geologger geo;
-//		geo = new Geologger();
+		Geologger geo;
+		geo = new Geologger();
 
 //		new LogAnalysis();
-//		new PMTKTest( geo.gps );
-//		new GPSClock( geo.gps );
+		new PMTKTest( geo.gps );
+		new GPSClock( geo.gps );
 
 //		int val = 0x000A127F;
 //		int val = 0x000a003f;

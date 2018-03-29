@@ -135,7 +135,12 @@ public class SerialDeviceConnection implements DeviceConnection {
 	}
 
 	static {
-		System.loadLibrary( "SerialDeviceConnection" );
+		try {
+			System.loadLibrary( "SerialDeviceConnection" );
+		} catch (UnsatisfiedLinkError ex) {
+			String path = System.getProperty( "user.dir" );
+			System.load( path + "/SerialDeviceConnection.so" );
+		}
 	}
 
 }
